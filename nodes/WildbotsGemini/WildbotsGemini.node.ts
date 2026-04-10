@@ -1,9 +1,4 @@
-import {
-	NodeConnectionTypes,
-	type IExecuteFunctions,
-	type INodeType,
-	type INodeTypeDescription,
-} from 'n8n-workflow';
+import type { IExecuteFunctions, INodeType, INodeTypeDescription } from 'n8n-workflow';
 
 import * as audio from './actions/audio';
 import * as document from './actions/document';
@@ -54,7 +49,7 @@ export class WildbotsGemini implements INodeType {
 				return ['main'];
 			})()
 		}}`,
-		outputs: [NodeConnectionTypes.Main],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'wildbotsGeminiApi',

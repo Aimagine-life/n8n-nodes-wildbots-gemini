@@ -5,7 +5,6 @@ import {
 	type INodeProperties,
 	jsonParse,
 	updateDisplayOptions,
-	NodeConnectionTypes,
 } from 'n8n-workflow';
 // zod-to-json-schema is lazy-loaded in execute() to avoid top-level require issues
 
@@ -433,7 +432,7 @@ export async function execute(this: IExecuteFunctions, i: number): Promise<INode
 
 	try {
 		const toolsInput = await this.getInputConnectionData(
-			NodeConnectionTypes.AiTool,
+			'ai_tool',
 			0,
 		);
 		if (Array.isArray(toolsInput)) {

@@ -1,4 +1,3 @@
-import { NodeConnectionTypes } from 'n8n-workflow';
 import type {
 	INodeType,
 	INodeTypeDescription,
@@ -32,7 +31,7 @@ export class LmChatWildbotsGemini implements INodeType {
 			},
 		},
 		inputs: [],
-		outputs: [NodeConnectionTypes.AiLanguageModel],
+		outputs: ['ai_languageModel'],
 		outputNames: ['Model'],
 		credentials: [
 			{
