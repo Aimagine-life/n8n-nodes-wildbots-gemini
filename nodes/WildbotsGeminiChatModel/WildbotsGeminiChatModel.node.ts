@@ -1,5 +1,3 @@
-import type { SafetySetting } from '@google/generative-ai';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { NodeConnectionTypes } from 'n8n-workflow';
 import type {
 	INodeType,
@@ -7,7 +5,6 @@ import type {
 	ISupplyDataFunctions,
 	SupplyData,
 } from 'n8n-workflow';
-
 
 export class WildbotsGeminiChatModel implements INodeType {
 	description: INodeTypeDescription = {
@@ -221,6 +218,9 @@ export class WildbotsGeminiChatModel implements INodeType {
 	};
 
 	async supplyData(this: ISupplyDataFunctions, itemIndex: number): Promise<SupplyData> {
+		// Lazy-load to avoid top-level require that breaks n8n community node loading
+		const { ChatGoogleGenerativeAI } = await import('@langchain/google-genai');
+
 		const credentials = await this.getCredentials('wildbotsGeminiApi');
 
 		const modelName = this.getNodeParameter('modelName', itemIndex) as string;
@@ -240,9 +240,9 @@ export class WildbotsGeminiChatModel implements INodeType {
 			'options.safetySettings.values',
 			itemIndex,
 			null,
-		) as SafetySetting[];
+		);
 
-		const model = new ChatGoogleGenerativeAI({
+		const modelConfig: Record<string, unknown> = {
 			apiKey: credentials.apiKey as string,
 			baseUrl: credentials.host as string,
 			model: modelName,
@@ -250,8 +250,14 @@ export class WildbotsGeminiChatModel implements INodeType {
 			topP: options.topP,
 			temperature: options.temperature,
 			maxOutputTokens: options.maxOutputTokens,
-			safetySettings,
-		});
+		};
+
+		if (safetySettings) {
+			modelConfig.safetySettings = safetySettings;
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const model = new ChatGoogleGenerativeAI(modelConfig as any);
 
 		return {
 			response: model,
