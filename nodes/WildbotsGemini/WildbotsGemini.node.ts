@@ -14,7 +14,7 @@ export class WildbotsGemini implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Wildbots Gemini',
 		name: 'wildbotsGemini',
-		icon: 'file:gemini.svg',
+		icon: 'file:wildbots.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
