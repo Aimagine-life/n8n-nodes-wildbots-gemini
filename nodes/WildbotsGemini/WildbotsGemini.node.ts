@@ -16,8 +16,7 @@ export class WildbotsGemini implements INodeType {
 		name: 'wildbotsGemini',
 		icon: 'file:gemini.svg',
 		group: ['transform'],
-		version: [1, 1.1],
-		defaultVersion: 1.1,
+		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
 		description: 'Google Gemini AI via Cloudflare proxy — works in any region',
 		defaults: {

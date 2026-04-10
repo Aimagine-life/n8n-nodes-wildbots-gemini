@@ -90,11 +90,6 @@ const properties: INodeProperties[] = [
 		placeholder: 'Add Built-in Tool',
 		type: 'collection',
 		default: {},
-		displayOptions: {
-			show: {
-				'@version': [{ _cnd: { gte: 1.1 } }],
-			},
-		},
 		options: [
 			{
 				displayName: 'Code Execution',
@@ -179,18 +174,6 @@ const properties: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Code Execution',
-				name: 'codeExecution',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to allow the model to execute code',
-				displayOptions: {
-					show: {
-						'@version': [{ _cnd: { eq: 1 } }],
-					},
-				},
-			},
-			{
 				displayName: 'Frequency Penalty',
 				name: 'frequencyPenalty',
 				default: 0,
@@ -209,11 +192,6 @@ const properties: INodeProperties[] = [
 				default: false,
 				description:
 					'Whether to include a single output string merging all text parts of the response',
-				displayOptions: {
-					show: {
-						'@version': [{ _cnd: { gte: 1.1 } }],
-					},
-				},
 			},
 			{
 				displayName: 'Max Tool Call Iterations',
