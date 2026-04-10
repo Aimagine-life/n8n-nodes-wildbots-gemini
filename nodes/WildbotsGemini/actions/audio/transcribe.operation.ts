@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, INodeExecutionData, INodeProperties } from 'n8n-workflow';
-import { updateDisplayOptions, validateNodeParameters } from 'n8n-workflow';
+import { updateDisplayOptions } from 'n8n-workflow';
 
 import type { Content, GenerateContentResponse } from '../../helpers/interfaces';
 import { downloadFile, uploadFile } from '../../helpers/utils';
@@ -104,16 +104,11 @@ export async function execute(this: IExecuteFunctions, i: number): Promise<INode
 	const model = this.getNodeParameter('modelId', i, '', { extractValue: true }) as string;
 	const inputType = this.getNodeParameter('inputType', i) as string;
 	const simplify = this.getNodeParameter('simplify', i, true) as boolean;
-	const options = this.getNodeParameter('options', i, {});
-	validateNodeParameters(
-		options,
-		{
-			startTime: { type: 'number', required: false },
-			endTime: { type: 'number', required: false },
-			maxOutputTokens: { type: 'number', required: false },
-		},
-		this.getNode(),
-	);
+	const options = this.getNodeParameter('options', i, {}) as {
+		startTime?: number;
+		endTime?: number;
+		maxOutputTokens?: number;
+	};
 
 	let fileData: { fileUri: string; mimeType: string };
 
