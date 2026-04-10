@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-wildbots-gemini",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Google Gemini AI nodes for n8n with built-in proxy — bypass regional restrictions effortlessly",
 	"license": "MIT",
 	"homepage": "https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini",
@@ -50,11 +50,11 @@
 		"typescript": "5.9.3"
 	},
 	"peerDependencies": {
-		"n8n-workflow": "*"
+		"n8n-workflow": "*",
+		"@google/generative-ai": "*",
+		"@langchain/google-genai": "*"
 	},
 	"dependencies": {
-		"@google/generative-ai": "^0.24.0",
-		"@langchain/google-genai": "^0.2.0",
 		"zod-to-json-schema": "^3.24.0"
 	}
 }
