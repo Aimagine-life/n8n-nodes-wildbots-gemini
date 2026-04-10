@@ -65,14 +65,14 @@ const properties: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Start Time (seconds)',
+				displayName: 'Start Time (Seconds)',
 				name: 'startTime',
 				type: 'number',
 				default: 0,
 				description: 'Start time in seconds for partial transcription',
 			},
 			{
-				displayName: 'End Time (seconds)',
+				displayName: 'End Time (Seconds)',
 				name: 'endTime',
 				type: 'number',
 				default: 0,

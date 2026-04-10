@@ -1,5 +1,6 @@
 import type {
 	IAuthenticateGeneric,
+	Icon,
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
@@ -9,6 +10,8 @@ export class WildbotsGeminiApi implements ICredentialType {
 	name = 'wildbotsGeminiApi';
 
 	displayName = 'Wildbots Gemini API';
+
+	icon: Icon = 'file:../nodes/WildbotsGemini/gemini.svg';
 
 	documentationUrl = 'https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini';
 

@@ -38,13 +38,13 @@ const properties: INodeProperties[] = [
 				],
 			},
 			{
-				displayName: 'Duration (seconds)',
+				displayName: 'Duration (Seconds)',
 				name: 'duration',
 				type: 'options',
 				default: '5',
 				options: [
-					{ name: '5 seconds', value: '5' },
-					{ name: '8 seconds', value: '8' },
+					{ name: '5 Seconds', value: '5' },
+					{ name: '8 Seconds', value: '8' },
 				],
 			},
 		],

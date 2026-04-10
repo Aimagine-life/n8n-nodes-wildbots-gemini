@@ -6,7 +6,7 @@ import type {
 	SupplyData,
 } from 'n8n-workflow';
 
-export class WildbotsGeminiChatModel implements INodeType {
+export class LmChatWildbotsGemini implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Wildbots Gemini Chat Model',
 		name: 'lmChatWildbotsGemini',
@@ -115,39 +115,6 @@ export class WildbotsGeminiChatModel implements INodeType {
 						type: 'number',
 					},
 					{
-						displayName: 'Sampling Temperature',
-						name: 'temperature',
-						default: 0.7,
-						description:
-							'Controls randomness. Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic.',
-						type: 'number',
-						typeOptions: {
-							maxValue: 2,
-							minValue: 0,
-							numberPrecision: 1,
-						},
-					},
-					{
-						displayName: 'Top K',
-						name: 'topK',
-						default: 40,
-						description: 'The maximum number of tokens to consider when sampling',
-						type: 'number',
-					},
-					{
-						displayName: 'Top P',
-						name: 'topP',
-						default: 0.9,
-						description:
-							'The maximum cumulative probability of tokens to consider when sampling',
-						type: 'number',
-						typeOptions: {
-							maxValue: 1,
-							minValue: 0,
-							numberPrecision: 1,
-						},
-					},
-					{
 						displayName: 'Safety Settings',
 						name: 'safetySettings',
 						type: 'fixedCollection',
@@ -211,6 +178,38 @@ export class WildbotsGeminiChatModel implements INodeType {
 								],
 							},
 						],
+					},
+					{
+						displayName: 'Sampling Temperature',
+						name: 'temperature',
+						default: 0.7,
+						description:
+							'Controls randomness. Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic',
+						type: 'number',
+						typeOptions: {
+							maxValue: 2,
+							minValue: 0,
+							numberPrecision: 1,
+						},
+					},
+					{
+						displayName: 'Top K',
+						name: 'topK',
+						default: 40,
+						description: 'The maximum number of tokens to consider when sampling',
+						type: 'number',
+					},
+					{
+						displayName: 'Top P',
+						name: 'topP',
+						default: 0.9,
+						description: 'The maximum cumulative probability of tokens to consider when sampling',
+						type: 'number',
+						typeOptions: {
+							maxValue: 1,
+							minValue: 0,
+							numberPrecision: 1,
+						},
 					},
 				],
 			},

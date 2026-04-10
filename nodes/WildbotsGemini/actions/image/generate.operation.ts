@@ -48,10 +48,10 @@ const properties: INodeProperties[] = [
 				default: '1:1',
 				options: [
 					{ name: '1:1', value: '1:1' },
+					{ name: '16:9', value: '16:9' },
 					{ name: '3:4', value: '3:4' },
 					{ name: '4:3', value: '4:3' },
 					{ name: '9:16', value: '9:16' },
-					{ name: '16:9', value: '16:9' },
 				],
 			},
 			{

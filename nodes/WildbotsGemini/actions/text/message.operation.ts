@@ -98,12 +98,34 @@ const properties: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Google Search',
-				name: 'googleSearch',
+				displayName: 'Code Execution',
+				name: 'codeExecution',
 				type: 'boolean',
 				default: true,
-				description:
-					'Whether to allow the model to search the web using Google Search to get real-time information',
+				description: 'Whether to allow the model to execute code it generates to produce a response',
+			},
+			{
+				displayName: 'File Search',
+				name: 'fileSearch',
+				type: 'collection',
+				default: { fileSearchStoreNames: '[]' },
+				options: [
+					{
+						displayName: 'File Search Store Names',
+						name: 'fileSearchStoreNames',
+						description: 'The file search store names to use for the file search',
+						type: 'json',
+						default: '[]',
+					},
+					{
+						displayName: 'Metadata Filter',
+						name: 'metadataFilter',
+						type: 'string',
+						default: '',
+						description: 'Use metadata filter to search within a subset of documents',
+						placeholder: 'e.g. author="John Doe"',
+					},
+				],
 			},
 			{
 				displayName: 'Google Maps',
@@ -134,42 +156,19 @@ const properties: INodeProperties[] = [
 				],
 			},
 			{
+				displayName: 'Google Search',
+				name: 'googleSearch',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to allow the model to search the web using Google Search to get real-time information',
+			},
+			{
 				displayName: 'URL Context',
 				name: 'urlContext',
 				type: 'boolean',
 				default: true,
 				description: 'Whether to allow the model to read and analyze content from specific URLs',
-			},
-			{
-				displayName: 'File Search',
-				name: 'fileSearch',
-				type: 'collection',
-				default: { fileSearchStoreNames: '[]' },
-				options: [
-					{
-						displayName: 'File Search Store Names',
-						name: 'fileSearchStoreNames',
-						description: 'The file search store names to use for the file search.',
-						type: 'json',
-						default: '[]',
-						required: true,
-					},
-					{
-						displayName: 'Metadata Filter',
-						name: 'metadataFilter',
-						type: 'string',
-						default: '',
-						description: 'Use metadata filter to search within a subset of documents.',
-						placeholder: 'e.g. author="John Doe"',
-					},
-				],
-			},
-			{
-				displayName: 'Code Execution',
-				name: 'codeExecution',
-				type: 'boolean',
-				default: true,
-				description: 'Whether to allow the model to execute code it generates to produce a response.',
 			},
 		],
 	},
@@ -181,31 +180,11 @@ const properties: INodeProperties[] = [
 		default: {},
 		options: [
 			{
-				displayName: 'Include Merged Response',
-				name: 'includeMergedResponse',
-				type: 'boolean',
-				default: false,
-				description:
-					'Whether to include a single output string merging all text parts of the response',
-				displayOptions: {
-					show: {
-						'@version': [{ _cnd: { gte: 1.1 } }],
-					},
-				},
-			},
-			{
-				displayName: 'System Message',
-				name: 'systemMessage',
-				type: 'string',
-				default: '',
-				placeholder: 'e.g. You are a helpful assistant',
-			},
-			{
 				displayName: 'Code Execution',
 				name: 'codeExecution',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to allow the model to execute code.',
+				description: 'Whether to allow the model to execute code',
 				displayOptions: {
 					show: {
 						'@version': [{ _cnd: { eq: 1 } }],
@@ -222,6 +201,30 @@ const properties: INodeProperties[] = [
 					minValue: -2,
 					maxValue: 2,
 					numberPrecision: 1,
+				},
+			},
+			{
+				displayName: 'Include Merged Response',
+				name: 'includeMergedResponse',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to include a single output string merging all text parts of the response',
+				displayOptions: {
+					show: {
+						'@version': [{ _cnd: { gte: 1.1 } }],
+					},
+				},
+			},
+			{
+				displayName: 'Max Tool Call Iterations',
+				name: 'maxIterations',
+				type: 'number',
+				default: 15,
+				description: 'Maximum number of tool call iterations before stopping',
+				typeOptions: {
+					minValue: 1,
+					maxValue: 100,
 				},
 			},
 			{
@@ -248,38 +251,14 @@ const properties: INodeProperties[] = [
 				},
 			},
 			{
-				displayName: 'Presence Penalty',
-				name: 'presencePenalty',
-				default: 0,
-				description: 'Positive values penalize new tokens based on whether they appear in the text so far',
-				type: 'number',
-				typeOptions: {
-					minValue: -2,
-					maxValue: 2,
-					numberPrecision: 1,
-				},
-			},
-			{
 				displayName: 'Output Randomness (Temperature)',
 				name: 'temperature',
 				default: 1,
-				description: 'Controls the randomness of the output.',
+				description: 'Controls the randomness of the output',
 				type: 'number',
 				typeOptions: {
 					minValue: 0,
 					maxValue: 2,
-					numberPrecision: 1,
-				},
-			},
-			{
-				displayName: 'Output Randomness (Top P)',
-				name: 'topP',
-				default: 1,
-				description: 'The maximum cumulative probability of tokens to consider when sampling',
-				type: 'number',
-				typeOptions: {
-					minValue: 0,
-					maxValue: 1,
 					numberPrecision: 1,
 				},
 			},
@@ -295,15 +274,35 @@ const properties: INodeProperties[] = [
 				},
 			},
 			{
-				displayName: 'Max Tool Call Iterations',
-				name: 'maxIterations',
+				displayName: 'Output Randomness (Top P)',
+				name: 'topP',
+				default: 1,
+				description: 'The maximum cumulative probability of tokens to consider when sampling',
 				type: 'number',
-				default: 15,
-				description: 'Maximum number of tool call iterations before stopping',
 				typeOptions: {
-					minValue: 1,
-					maxValue: 100,
+					minValue: 0,
+					maxValue: 1,
+					numberPrecision: 1,
 				},
+			},
+			{
+				displayName: 'Presence Penalty',
+				name: 'presencePenalty',
+				default: 0,
+				description: 'Positive values penalize new tokens based on whether they appear in the text so far',
+				type: 'number',
+				typeOptions: {
+					minValue: -2,
+					maxValue: 2,
+					numberPrecision: 1,
+				},
+			},
+			{
+				displayName: 'System Message',
+				name: 'systemMessage',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. You are a helpful assistant',
 			},
 			{
 				displayName: 'Thinking Budget',
