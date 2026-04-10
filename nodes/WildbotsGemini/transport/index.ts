@@ -3,6 +3,7 @@ import type {
 	IExecuteFunctions,
 	IHttpRequestMethods,
 	ILoadOptionsFunctions,
+	JsonObject,
 } from 'n8n-workflow';
 import { NodeApiError } from 'n8n-workflow';
 
@@ -62,7 +63,7 @@ export async function apiRequest(
 			error?.httpCode === '429' &&
 			host === DEFAULT_PROXY_HOST
 		) {
-			throw new NodeApiError(this.getNode(), error as IDataObject, {
+			throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
 				message: 'Rate limit exceeded',
 				description: RATE_LIMIT_MESSAGE,
 			});

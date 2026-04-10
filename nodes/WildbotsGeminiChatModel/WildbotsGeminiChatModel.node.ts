@@ -2,19 +2,12 @@ import type { SafetySetting } from '@google/generative-ai';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { NodeConnectionTypes } from 'n8n-workflow';
 import type {
-	NodeError,
 	INodeType,
 	INodeTypeDescription,
 	ISupplyDataFunctions,
 	SupplyData,
 } from 'n8n-workflow';
 
-function _errorDescriptionMapper(error: NodeError) {
-	if (error.description?.includes('properties: should be non-empty for OBJECT type')) {
-		return 'Google Gemini requires at least one dynamic parameter when using tools';
-	}
-	return error.description ?? 'Unknown error';
-}
 
 export class WildbotsGeminiChatModel implements INodeType {
 	description: INodeTypeDescription = {
