@@ -1,0 +1,49 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+import * as createStore from './createStore.operation';
+import * as deleteStore from './deleteStore.operation';
+import * as listStores from './listStores.operation';
+import * as uploadToStore from './uploadToStore.operation';
+
+export { createStore, deleteStore, listStores, uploadToStore };
+
+export const description: INodeProperties[] = [
+	{
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		options: [
+			{
+				name: 'Create a File Search Store',
+				value: 'createStore',
+				action: 'Create a file search store',
+			},
+			{
+				name: 'Delete a File Search Store',
+				value: 'deleteStore',
+				action: 'Delete a file search store',
+			},
+			{
+				name: 'List All File Search Stores',
+				value: 'listStores',
+				action: 'List all file search stores',
+			},
+			{
+				name: 'Upload a File to a File Search Store',
+				value: 'uploadToStore',
+				action: 'Upload a file to a file search store',
+			},
+		],
+		default: 'listStores',
+		displayOptions: {
+			show: {
+				resource: ['fileSearch'],
+			},
+		},
+	},
+	...createStore.description,
+	...deleteStore.description,
+	...listStores.description,
+	...uploadToStore.description,
+];
