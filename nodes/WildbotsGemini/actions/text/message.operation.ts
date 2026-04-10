@@ -7,7 +7,7 @@ import {
 	updateDisplayOptions,
 	NodeConnectionTypes,
 } from 'n8n-workflow';
-import zodToJsonSchema from 'zod-to-json-schema';
+// zod-to-json-schema is lazy-loaded in execute() to avoid top-level require issues
 
 import type {
 	GenerateContentResponse,
@@ -445,6 +445,7 @@ export async function execute(this: IExecuteFunctions, i: number): Promise<INode
 	}
 
 	if (connectedTools.length > 0) {
+		const { default: zodToJsonSchema } = await import('zod-to-json-schema');
 		const functionDeclarations = connectedTools.map((tool) => {
 			const schema = tool.schema
 				? zodToJsonSchema(tool.schema as Parameters<typeof zodToJsonSchema>[0])

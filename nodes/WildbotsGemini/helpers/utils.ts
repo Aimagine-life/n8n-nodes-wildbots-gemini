@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type { IDataObject, IExecuteFunctions } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 import { Readable } from 'node:stream';
@@ -115,6 +114,7 @@ async function getFileStreamFromUrlOrBinary(
 	qs?: IDataObject,
 ): Promise<FileStreamData | FileBufferData> {
 	if (downloadUrl) {
+		const { default: axios } = await import('axios');
 		const downloadResponse = await axios.get(downloadUrl, {
 			params: qs,
 			responseType: 'stream',
