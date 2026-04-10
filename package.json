@@ -1,0 +1,61 @@
+{
+	"name": "n8n-nodes-wildbots-gemini",
+	"version": "0.1.0",
+	"description": "Google Gemini AI nodes for n8n with built-in proxy — bypass regional restrictions effortlessly",
+	"license": "MIT",
+	"homepage": "https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"gemini",
+		"google",
+		"ai",
+		"proxy",
+		"cloudflare"
+	],
+	"author": {
+		"name": "Wildbots",
+		"url": "https://github.com/Aimagine-life"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/WildbotsGeminiApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/WildbotsGemini/WildbotsGemini.node.js",
+			"dist/nodes/WildbotsGeminiChatModel/WildbotsGeminiChatModel.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "9.39.4",
+		"prettier": "3.8.1",
+		"typescript": "5.9.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"dependencies": {
+		"@google/generative-ai": "^0.24.0",
+		"@langchain/google-genai": "^0.2.0",
+		"zod-to-json-schema": "^3.24.0"
+	}
+}
