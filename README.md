@@ -107,42 +107,118 @@ The public proxy is rate-limited. If you hit the limit, or simply want your own 
 
 #### The Worker code
 
-Whichever method you pick below, you'll need this code:
+Whichever method you pick below, you'll need this code. It's a hardened reverse-proxy that:
+- Forwards only valid Gemini API paths (`/v1beta/`, `/v1/`, `/upload/`) — everything else returns 404
+- Strips hop-by-hop and Cloudflare-specific headers before forwarding upstream
+- Returns JSON errors when the upstream is unreachable
+- Exposes a `/health` endpoint so you can ping it in a browser to verify it's alive
+- Passes response bodies as streams (works with Gemini SSE / streaming responses)
 
 ```javascript
+const VERSION = '2.0.0';
+const UPSTREAM_HOST = 'generativelanguage.googleapis.com';
+
+const ALLOWED_PATH_PREFIXES = ['/v1beta/', '/v1/', '/upload/'];
+
+const STRIPPED_REQUEST_HEADERS = new Set([
+  'host', 'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
+  'te', 'trailer', 'transfer-encoding', 'upgrade',
+  'cf-connecting-ip', 'cf-ipcountry', 'cf-ray', 'cf-visitor', 'cf-worker',
+  'cf-ew-via', 'cf-request-id',
+  'x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host', 'x-real-ip',
+]);
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Max-Age': '86400',
+};
+
+function jsonResponse(status, body) {
+  return new Response(JSON.stringify(body, null, 2), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      ...CORS_HEADERS,
+    },
+  });
+}
+
+function isAllowedPath(pathname) {
+  return ALLOWED_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+function buildUpstreamHeaders(incoming) {
+  const headers = new Headers();
+  incoming.forEach((value, name) => {
+    if (!STRIPPED_REQUEST_HEADERS.has(name.toLowerCase())) {
+      headers.set(name, value);
+    }
+  });
+  return headers;
+}
+
 export default {
   async fetch(request) {
+    const url = new URL(request.url);
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Max-Age': '86400',
-        },
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (url.pathname === '/' || url.pathname === '/health') {
+      return jsonResponse(200, {
+        status: 'ok',
+        name: 'wildbots-gemini-proxy',
+        version: VERSION,
+        upstream: UPSTREAM_HOST,
+        docs: 'https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini',
       });
     }
 
-    const url = new URL(request.url);
-    url.hostname = 'generativelanguage.googleapis.com';
+    if (!isAllowedPath(url.pathname)) {
+      return jsonResponse(404, {
+        error: 'not_found',
+        message: `Path "${url.pathname}" is not a Gemini API endpoint.`,
+        allowed_prefixes: ALLOWED_PATH_PREFIXES,
+        hint: 'This proxy only forwards requests to the Google Gemini API.',
+      });
+    }
 
-    const proxyRequest = new Request(url.toString(), {
+    const upstreamUrl = new URL(url.toString());
+    upstreamUrl.hostname = UPSTREAM_HOST;
+    upstreamUrl.protocol = 'https:';
+    upstreamUrl.port = '';
+
+    const upstreamRequest = new Request(upstreamUrl.toString(), {
       method: request.method,
-      headers: request.headers,
+      headers: buildUpstreamHeaders(request.headers),
       body: request.body,
       redirect: 'follow',
     });
 
-    const response = await fetch(proxyRequest);
+    let upstreamResponse;
+    try {
+      upstreamResponse = await fetch(upstreamRequest);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return jsonResponse(502, {
+        error: 'upstream_unreachable',
+        message: `Failed to reach ${UPSTREAM_HOST}: ${message}`,
+        proxy_version: VERSION,
+      });
+    }
 
-    const responseHeaders = new Headers(response.headers);
-    responseHeaders.set('Access-Control-Allow-Origin', '*');
-    responseHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    responseHeaders.set('Access-Control-Allow-Headers', '*');
+    const responseHeaders = new Headers(upstreamResponse.headers);
+    for (const [name, value] of Object.entries(CORS_HEADERS)) {
+      responseHeaders.set(name, value);
+    }
 
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
+    return new Response(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      statusText: upstreamResponse.statusText,
       headers: responseHeaders,
     });
   },
@@ -297,42 +373,118 @@ Credential **Wildbots Gemini API** содержит два поля:
 
 #### Код воркера
 
-Код воркера одинаковый для обоих способов ниже:
+Код один и тот же для обоих способов ниже. Это защищённый reverse-proxy, который:
+- Проксирует только валидные Gemini API пути (`/v1beta/`, `/v1/`, `/upload/`) — всё остальное возвращает 404
+- Чистит hop-by-hop и Cloudflare-специфичные заголовки перед отправкой на upstream
+- Возвращает JSON-ошибки, если upstream недоступен
+- Отдаёт `/health` эндпоинт — можно пингануть в браузере и увидеть что воркер живой
+- Передаёт тело ответа как поток (работает со стримингом Gemini через SSE)
 
 ```javascript
+const VERSION = '2.0.0';
+const UPSTREAM_HOST = 'generativelanguage.googleapis.com';
+
+const ALLOWED_PATH_PREFIXES = ['/v1beta/', '/v1/', '/upload/'];
+
+const STRIPPED_REQUEST_HEADERS = new Set([
+  'host', 'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
+  'te', 'trailer', 'transfer-encoding', 'upgrade',
+  'cf-connecting-ip', 'cf-ipcountry', 'cf-ray', 'cf-visitor', 'cf-worker',
+  'cf-ew-via', 'cf-request-id',
+  'x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host', 'x-real-ip',
+]);
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Max-Age': '86400',
+};
+
+function jsonResponse(status, body) {
+  return new Response(JSON.stringify(body, null, 2), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      ...CORS_HEADERS,
+    },
+  });
+}
+
+function isAllowedPath(pathname) {
+  return ALLOWED_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+function buildUpstreamHeaders(incoming) {
+  const headers = new Headers();
+  incoming.forEach((value, name) => {
+    if (!STRIPPED_REQUEST_HEADERS.has(name.toLowerCase())) {
+      headers.set(name, value);
+    }
+  });
+  return headers;
+}
+
 export default {
   async fetch(request) {
+    const url = new URL(request.url);
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Max-Age': '86400',
-        },
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (url.pathname === '/' || url.pathname === '/health') {
+      return jsonResponse(200, {
+        status: 'ok',
+        name: 'wildbots-gemini-proxy',
+        version: VERSION,
+        upstream: UPSTREAM_HOST,
+        docs: 'https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini',
       });
     }
 
-    const url = new URL(request.url);
-    url.hostname = 'generativelanguage.googleapis.com';
+    if (!isAllowedPath(url.pathname)) {
+      return jsonResponse(404, {
+        error: 'not_found',
+        message: `Path "${url.pathname}" is not a Gemini API endpoint.`,
+        allowed_prefixes: ALLOWED_PATH_PREFIXES,
+        hint: 'This proxy only forwards requests to the Google Gemini API.',
+      });
+    }
 
-    const proxyRequest = new Request(url.toString(), {
+    const upstreamUrl = new URL(url.toString());
+    upstreamUrl.hostname = UPSTREAM_HOST;
+    upstreamUrl.protocol = 'https:';
+    upstreamUrl.port = '';
+
+    const upstreamRequest = new Request(upstreamUrl.toString(), {
       method: request.method,
-      headers: request.headers,
+      headers: buildUpstreamHeaders(request.headers),
       body: request.body,
       redirect: 'follow',
     });
 
-    const response = await fetch(proxyRequest);
+    let upstreamResponse;
+    try {
+      upstreamResponse = await fetch(upstreamRequest);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return jsonResponse(502, {
+        error: 'upstream_unreachable',
+        message: `Failed to reach ${UPSTREAM_HOST}: ${message}`,
+        proxy_version: VERSION,
+      });
+    }
 
-    const responseHeaders = new Headers(response.headers);
-    responseHeaders.set('Access-Control-Allow-Origin', '*');
-    responseHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    responseHeaders.set('Access-Control-Allow-Headers', '*');
+    const responseHeaders = new Headers(upstreamResponse.headers);
+    for (const [name, value] of Object.entries(CORS_HEADERS)) {
+      responseHeaders.set(name, value);
+    }
 
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
+    return new Response(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      statusText: upstreamResponse.statusText,
       headers: responseHeaders,
     });
   },
