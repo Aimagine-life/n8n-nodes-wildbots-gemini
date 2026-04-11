@@ -103,28 +103,11 @@ The **Wildbots Gemini API** credential has two fields:
 
 ### Deploy Your Own Worker
 
-The public proxy is rate-limited. If you hit the limit, or simply want your own private proxy, deploy one in minutes for free on Cloudflare.
+The public proxy is rate-limited. If you hit the limit, or simply want your own private proxy, deploy one for free on Cloudflare — no credit card required.
 
-#### Prerequisites
+#### The Worker code
 
-- A free [Cloudflare account](https://cloudflare.com)
-- Node.js installed
-
-#### Steps
-
-**1. Create a free Cloudflare account**
-
-Sign up at [cloudflare.com](https://cloudflare.com) — no credit card required for Workers.
-
-**2. Install Wrangler CLI**
-
-```bash
-npm install -g wrangler
-```
-
-**3. Create the Worker file**
-
-Create a new directory and add a file named `worker.js` with the following code:
+Whichever method you pick below, you'll need this code:
 
 ```javascript
 export default {
@@ -166,29 +149,57 @@ export default {
 };
 ```
 
-**4. Log in to Cloudflare**
+#### Option A — Cloudflare Dashboard (no installs, recommended)
+
+The fastest way — everything happens in the browser.
+
+**1.** Sign in at [dash.cloudflare.com](https://dash.cloudflare.com). If you don't have an account, sign up — no credit card needed for the free Workers plan.
+
+**2.** In the left sidebar click **Compute (Workers)** → **Workers & Pages**.
+
+**3.** Click **Create** → **Create Worker**.
+
+**4.** Enter a name (for example `gemini-proxy`) and click **Deploy**. Cloudflare deploys a default "Hello World" worker.
+
+**5.** Once the deploy finishes, click **Edit code** in the top right. The online code editor opens.
+
+**6.** **Delete all the existing code** in `worker.js` and paste the Worker code from the block above.
+
+**7.** Click **Deploy** in the top right of the editor.
+
+**8.** Your Worker is live. The URL is shown at the top of the page — it looks like `https://gemini-proxy.<your-subdomain>.workers.dev`.
+
+**9.** Open your **Wildbots Gemini API** credential in n8n, paste that URL into the **Host** field, and save. Done.
+
+#### Option B — Wrangler CLI (for developers)
+
+If you prefer the terminal.
+
+**1.** Install Wrangler:
+
+```bash
+npm install -g wrangler
+```
+
+**2.** Create a new folder and save the Worker code from the block above as `worker.js`.
+
+**3.** Log in to Cloudflare:
 
 ```bash
 wrangler login
 ```
 
-This opens a browser window. Authorize Wrangler with your Cloudflare account.
+A browser window opens — authorize Wrangler with your Cloudflare account.
 
-**5. Deploy the Worker**
+**4.** Deploy:
 
 ```bash
 wrangler deploy worker.js --name gemini-proxy --compatibility-date 2024-01-01
 ```
 
-After deploy, Wrangler prints your Worker URL — something like:
+Wrangler prints your Worker URL, something like `https://gemini-proxy.<your-subdomain>.workers.dev`.
 
-```
-https://gemini-proxy.<your-subdomain>.workers.dev
-```
-
-**6. Add your Worker URL to the n8n credential**
-
-Open your **Wildbots Gemini API** credential in n8n, paste the Worker URL into the **Host** field, and save. Done.
+**5.** Paste the URL into the **Host** field of your **Wildbots Gemini API** credential in n8n, and save. Done.
 
 ---
 
@@ -282,28 +293,11 @@ Credential **Wildbots Gemini API** содержит два поля:
 
 ### Разверните свой воркер
 
-Публичный прокси имеет лимиты. Если они закончились — или вы просто хотите свой приватный прокси — разверните его за пару минут бесплатно на Cloudflare.
+Публичный прокси имеет лимиты. Если они закончились — или вы просто хотите свой приватный прокси — разверните его бесплатно на Cloudflare. Кредитная карта не нужна.
 
-#### Что нужно
+#### Код воркера
 
-- Бесплатный аккаунт [Cloudflare](https://cloudflare.com)
-- Установленный Node.js
-
-#### Шаги
-
-**1. Создайте бесплатный аккаунт Cloudflare**
-
-Зарегистрируйтесь на [cloudflare.com](https://cloudflare.com) — кредитная карта для Workers не нужна.
-
-**2. Установите Wrangler CLI**
-
-```bash
-npm install -g wrangler
-```
-
-**3. Создайте файл воркера**
-
-Создайте новую папку и добавьте файл `worker.js`:
+Код воркера одинаковый для обоих способов ниже:
 
 ```javascript
 export default {
@@ -345,29 +339,57 @@ export default {
 };
 ```
 
-**4. Войдите в Cloudflare**
+#### Вариант A — через панель Cloudflare (рекомендуется, без установок)
+
+Самый простой путь — всё делается в браузере.
+
+**1.** Зайдите на [dash.cloudflare.com](https://dash.cloudflare.com). Если аккаунта нет — зарегистрируйтесь, кредитная карта для бесплатного плана Workers не нужна.
+
+**2.** В левом меню нажмите **Compute (Workers)** → **Workers & Pages**.
+
+**3.** Нажмите **Create** → **Create Worker**.
+
+**4.** Введите имя (например `gemini-proxy`) и нажмите **Deploy**. Cloudflare задеплоит стандартный "Hello World" воркер.
+
+**5.** После завершения деплоя нажмите **Edit code** в правом верхнем углу — откроется онлайн-редактор.
+
+**6.** **Удалите весь существующий код** в `worker.js` и вставьте код воркера из блока выше.
+
+**7.** Нажмите **Deploy** в правом верхнем углу редактора.
+
+**8.** Ваш воркер запущен. URL показан вверху страницы — он выглядит как `https://gemini-proxy.<ваш-субдомен>.workers.dev`.
+
+**9.** Откройте credential **Wildbots Gemini API** в n8n, вставьте этот URL в поле **Host** и сохраните. Готово.
+
+#### Вариант B — через Wrangler CLI (для разработчиков)
+
+Если вам удобнее работать через терминал.
+
+**1.** Установите Wrangler:
+
+```bash
+npm install -g wrangler
+```
+
+**2.** Создайте новую папку и сохраните код воркера из блока выше как `worker.js`.
+
+**3.** Войдите в Cloudflare:
 
 ```bash
 wrangler login
 ```
 
-Откроется браузер — авторизуйте Wrangler в своём аккаунте Cloudflare.
+Откроется браузер — авторизуйте Wrangler в своём аккаунте.
 
-**5. Задеплойте воркер**
+**4.** Задеплойте:
 
 ```bash
 wrangler deploy worker.js --name gemini-proxy --compatibility-date 2024-01-01
 ```
 
-После деплоя Wrangler покажет URL вашего воркера:
+Wrangler покажет URL вашего воркера, типа `https://gemini-proxy.<ваш-субдомен>.workers.dev`.
 
-```
-https://gemini-proxy.<ваш-субдомен>.workers.dev
-```
-
-**6. Укажите URL воркера в n8n**
-
-Откройте credential **Wildbots Gemini API** в n8n, вставьте URL воркера в поле **Host** и сохраните. Готово.
+**5.** Вставьте URL в поле **Host** credential **Wildbots Gemini API** в n8n и сохраните. Готово.
 
 ---
 
