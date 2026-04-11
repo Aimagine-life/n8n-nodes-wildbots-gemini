@@ -11,7 +11,7 @@ export class WildbotsGeminiApi implements ICredentialType {
 
 	displayName = 'Wildbots Gemini API';
 
-	icon: Icon = 'file:../nodes/WildbotsGemini/wildbots.png';
+	icon: Icon = 'file:../nodes/WildbotsGemini/wildbots.svg';
 
 	documentationUrl = 'https://github.com/Aimagine-life/n8n-nodes-wildbots-gemini';
 

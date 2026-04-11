@@ -9,7 +9,7 @@ export class LmChatWildbotsGemini implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Wildbots Gemini Chat Model',
 		name: 'lmChatWildbotsGemini',
-		icon: 'file:wildbots.png',
+		icon: 'file:wildbots.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Google Gemini Chat Model via Cloudflare proxy — works in any region',
