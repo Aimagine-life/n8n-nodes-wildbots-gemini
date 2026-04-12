@@ -1,5 +1,19 @@
 dist
 node_modules
 .tsbuildinfo
-.npmrc
+
+# secrets
 .env
+.env.*
+!.env.example
+.npmrc
+.dev.vars
+.wrangler/
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account*.json
+*.local.*
